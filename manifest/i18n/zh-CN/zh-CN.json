@@ -1,0 +1,15 @@
+{
+    "gf.gvalid.rule.length":"长度 {field} 必须介于 {min} 和 {max} 之间",
+    "gf.gvalid.rule.between":"{field} 必须介于 {min} 和 {max} 之间",
+    "gf.gvalid.rule.in":"{field} 必须为 {in} 中的一个",
+    "gf.gvalid.rule.required":"{field} 不能为空",
+    "gf.gvalid.rule.min":"{field} 不能小于 {min}",
+    "gf.gvalid.rule.max":"{field} 不能大于 {max}",
+    "gf.gvalid.rule.email":"{field} 必须是一个有效的邮箱地址",
+    "gf.gvalid.rule.phone":"{field} 必须是一个有效的手机号码",
+
+
+
+    "business.fail":"操作失败",
+    "business.success":"操作成功"
+}

@@ -6,7 +6,14 @@ gfcli:
     dao:
       - link: "mysql:root:secret@tcp(127.0.0.1:3308)/gf-boilerplate"
         descriptionTag: true
-
+  run:
+    path:  "./bin"
+    extra: ""
+    args:  "--gf.debug --gf.gcfg.file=manifest/config/config.local.yaml"
+    watchPaths:
+      # - api/*.go
+      # - internal/controller/*.go
+      # - utility/*.go
   docker:
     build: "-a amd64 -s linux -p temp -ew"
     tagPrefixes:

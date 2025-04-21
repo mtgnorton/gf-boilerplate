@@ -1,0 +1,7 @@
+# Menu related
+name_exists = "Menu name already exists"
+parent_not_exists = "Parent menu does not exist"
+parent_error = "Cannot set parent to self or its children"
+not_found = "Menu not found"
+has_children = "Menu has children, cannot delete"
+has_roles = "Menu is used by roles, cannot delete" 

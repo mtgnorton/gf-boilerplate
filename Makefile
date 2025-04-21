@@ -8,19 +8,31 @@ export GOOSE_DBSTRING=root:secret@tcp(127.0.0.1:3308)/gf-boilerplate?charset=utf
 export GOOSE_MIGRATION_DIR=./manifest/migration
 
 
-# include ./hack/hack.mk
+include ./hack/hack.mk
 
-goose-up:
+run-local:
+	gf run main.go
+
+migrate:
 	goose up
 
-goose-down:
+rollback:
 	goose down
 
 timestr:
 	@echo `date +"%Y%m%d%H%M%S"`
 
 lint:
-	golangci-lint run main.go
+	golangci-lint run ./...
 
 lint-fix:
-	golangci-lint run --fix main.go
+	golangci-lint run --fix ./...
+
+
+ctrl-backend:
+	gf gen ctrl -s ./apibackend -d ./internal/controller/backend -m -v
+
+ctrl-frontend:
+	gf gen ctrl -s ./api/frontend -d ./internal/controller/frontend -m
+
+

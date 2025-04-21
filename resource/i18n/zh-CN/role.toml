@@ -1,0 +1,4 @@
+# 角色相关
+key_exists = "角色标识已存在"
+not_found = "角色不存在"
+has_members = "角色下存在会员，无法删除" 

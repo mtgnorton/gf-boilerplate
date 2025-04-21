@@ -1,0 +1,28 @@
+# https://goframe.org/docs/web/server-config-file-template
+server:
+  address:     ":8002"
+  openapiPath: "/api.json"
+  swaggerPath: "/swagger"
+  errorLogEnabled: true
+  accessLogEnabled: true
+  pprofEnabled: true
+  logger:
+    path: "/var/log/server"
+    file: "{Y-m-d}.log"
+    stdout: false
+    rotateSize: "100M"
+    rotateBackupLimit: 10
+    rotateBackupExpire: "60d"
+    rotateBackupCompress: 9
+    rotateCheckInterval: "24h"
+# https://goframe.org/docs/core/glog-config
+#  DEBU < INFO < NOTI < WARN < ERRO < CRIT
+#  ALL, DEV, PROD
+logger:
+  level : "all"
+  stdout: true
+
+# https://goframe.org/docs/core/gdb-config-file
+database:
+  default:
+    link: "mysql:root:secret@tcp(127.0.0.1:3308)/gf-boilerplate?loc=Local&parseTime=true&charset=utf8mb4"

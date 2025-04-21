@@ -1,0 +1,59 @@
+@20250410120615_create_user_table.sql @hotgo
+hotgo文件夹是我参考的代码,我现在打算实现一个只有rbac权限管理的最小可用版本,不需要岗位部门,
+表设计我已经完成,基于表的模型也已经生成,在internal/model文件夹下,
+所有代码要符合 @.golangci.yml 静态检查,语言文件应该在manifest/i18n/,如何定义参考manifest/i18n/zh-CN/zh-CN.json
+所有代码要考虑国际化,国际化参考 @middleware_response.go,
+internal/service 下的代码不需要基于接口实现,所有对数据库的数据的操作,优先使用internal/model/do下定义的结构,不要使用map
+所有api请求响应参数应该定义在api/backend/organization下,所有的参数要进行严格的验证,验证优先使用内置的验证
+参数定义完成后,执行 make crtl,会在internal/controller/backend下生成控制器代码,在这里面实现控制器代码,
+
+
+基于以上实现menu,member,role 的增删改查
+
+
+
+
+
+# 项目基础信息
+1. golang版本：基于1.23.0，鼓励使用新特性,goframe版本为v2.9.0
+2. 代码规范：必须符合`.golangci.yml`文件定义的静态检查规则
+
+# 目录结构说明
+项目遵循标准的GoFrame目录结构：
+- `api/backend/organization/`: 定义所有API请求响应参数
+- `internal/model/`: 包含数据模型定义
+  - `do/`: 领域对象定义
+  - `entity/`: 数据库实体定义
+- `internal/service/`: 业务逻辑层（无需基于接口实现）
+- `internal/controller/backend/`: 控制器实现
+- `manifest/i18n/`: 国际化语言文件目录
+
+# 开发规范
+1. 数据操作规范：
+   - 优先使用`internal/model/do`下定义的结构
+   - 避免使用map类型
+   
+2. 参数验证：
+   - 所有API参数必须进行严格验证
+   - 优先使用框架内置验证器
+   - 参数错误提示语也必须进行国际化
+
+3. 国际化要求：
+   - 所有代码必须支持国际化
+   - 语言文件位置：`manifest/i18n/`
+   - 参考文件：`manifest/i18n/zh-CN/zh-CN.json`
+   - 实现参考：`middleware_response.go`
+
+4. 代码生成：
+   - 定义完API参数后，执行`make ctrl`命令
+   - 将在`internal/controller/backend`下生成控制器代码
+
+# 代码设计模式
+当结构体参数超过3个时，应采用选项模式（Option Pattern）设计，具体参考原提示中的Backoff结构示例。
+
+
+# 功能实现范围
+需要实现的RBAC权限管理最小可用版本：
+1. menu（菜单）的CRUD
+2. member（成员）的CRUD
+3. role（角色）的CRUD

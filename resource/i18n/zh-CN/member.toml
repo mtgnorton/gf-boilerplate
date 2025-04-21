@@ -1,0 +1,4 @@
+# 会员相关
+username_exists = "用户名已存在"
+role_not_exists = "角色不存在"
+not_found = "会员不存在" 

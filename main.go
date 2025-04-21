@@ -2,13 +2,16 @@
 package main
 
 import (
-	_ "gf-boilerplate/internal/packed"
-
+	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gctx"
 
+	_ "github.com/gogf/gf/contrib/drivers/mysql/v2"
+
 	"gf-boilerplate/internal/cmd"
+	_ "gf-boilerplate/internal/packed"
 )
 
 func main() {
+	g.I18n().SetLanguage("zh-CN")
 	cmd.Main.Run(gctx.GetInitCtx())
 }

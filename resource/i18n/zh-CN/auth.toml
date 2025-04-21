@@ -1,0 +1,10 @@
+# 认证相关
+unauthorized = "未授权访问"
+token_expired = "登录已过期"
+forbidden = "无权访问"
+username_not_exist = "用户名不存在"
+password_error = "密码错误"
+account_disabled = "账号已禁用"
+role_not_exist = "角色不存在"
+role_disabled = "角色已禁用"
+check_permission_failed = "权限检查失败" 

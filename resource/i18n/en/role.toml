@@ -1,0 +1,4 @@
+# Role related
+key_exists = "Role key already exists"
+not_found = "Role not found"
+has_members = "Role has members, cannot delete" 

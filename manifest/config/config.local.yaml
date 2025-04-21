@@ -1,0 +1,38 @@
+system:
+  # debug开关，开启后接口出现错误时会向前端输出堆栈信息，可选：false|true，默认为true
+  debug: true
+
+# https://goframe.org/docs/web/server-config-file-template
+server:
+  address:     ":8002"
+  openapiPath: "/api.json"
+  swaggerPath: "/swagger"
+  errorLogEnabled: false
+
+# https://goframe.org/docs/core/glog-config
+#  DEBU < INFO < NOTI < WARN < ERRO < CRIT
+#  ALL, DEV, PROD
+logger:
+  level : "all"
+  stdout: true
+
+notify:
+  default: fs # fs为feishu
+  fsWebhook: 111
+
+# https://goframe.org/docs/core/gdb-config-file
+database:
+  default:
+    link: "mysql:root:secret@tcp(127.0.0.1:3308)/gf-boilerplate?loc=Local&parseTime=true&charset=utf8mb4"
+
+# Redis 配置示例
+redis:
+  default:
+    address: 127.0.0.1:6379
+    db:      1
+  cache:
+    address:     127.0.0.1:6379
+    db:          0
+    pass:        
+
+  

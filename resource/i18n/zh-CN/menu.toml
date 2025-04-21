@@ -1,0 +1,7 @@
+# 菜单相关
+name_exists = "菜单标识已存在"
+parent_not_exists = "上级菜单不存在"
+parent_error = "不能将父级设置为自己或自己的子级"
+not_found = "菜单不存在"
+has_children = "菜单下存在子菜单，无法删除"
+has_roles = "菜单已被角色使用，无法删除" 

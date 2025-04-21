@@ -1,0 +1,10 @@
+# Authentication related
+unauthorized = "Unauthorized access"
+token_expired = "Login has expired"
+forbidden = "Access denied"
+username_not_exist = "Username does not exist"
+password_error = "Password error"
+account_disabled = "Account is disabled"
+role_not_exist = "Role does not exist"
+role_disabled = "Role is disabled"
+check_permission_failed = "Permission check failed" 

@@ -1,0 +1,95 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+
+# Your rule content
+0. 目录结构
+├── api                     # api接口参数
+├── hack                    # 工具脚本：存放与项目构建、部署、测试相关的辅助脚本和工具配置，如CI/CD脚本、代码生成工具等。
+├── internal                # 内部逻辑：项目核心实现代码，通过Go的internal机制保护内部实现细节，避免被外部项目直接引用。
+│   ├── cmd                 # 入口指令：应用程序的CLI命令入口，组织多命令结构，初始化应用配置。
+│   ├── consts              # 常量定义：集中管理项目使用的枚举值、状态码、配置键名等常量，避免魔法值。
+│   ├── controller          # 接口处理：负责处理外部请求，进行参数校验、权限检查等前置逻辑，调用service层处理业务。
+│   ├── dao                 # 数据访问: 使用dao.User.Ctx(ctx)的方式访问对应数据表
+│   ├── model               # model 直属go文件为自定义的模型方法
+│   │   ├── do              # 查询,插入，更新,等需要操作数据的时候,使用该文件下的定义的结构,不要使用map,该文件夹下的代码不用开发
+│   │   └── entity          # 数据模型：与数据库表结构直接映射的实体定义,该文件夹下的代码不用开发
+│   └── service             # 业务实现：核心业务逻辑层，不要使用接口定义的方式
+│   ├── middleware          # 中间件：应用程序的中间件定义，处理请求的预处理和后处理逻辑，如日志、认证等。
+├── hotgo                   # 参考的其他项目的代码,当不知道如何实现时,参考该项目
+├── manifest
+│   ├── i18n				# 语言文件存放路径,参考`manifest/i18n/zh-CN/zh-CN.json`,调用参考internal/service/middleware/middleware_response.go
+├── resource                # 静态资源：前端资源文件、配置文件模板等，通过embed机制打包进二进制或单独部署。
+├── utility                 # 通用工具：项目公共工具类，如字符串处理、加解密等与业务无关的辅助功能。
+├── go.mod                  # 依赖管理：Go模块定义文件，明确项目依赖及版本，支持可重复构建。
+└── main.go                 # 入口文件：程序启动入口，初始化应用配置、注册路由和依赖组件。
+
+
+1. golang 版本基于1.23.0,可以利用新特性的时候,使用新特性
+2. 代码规范：必须符合`.golangci.yml`文件定义的静态检查规则
+3. 必须具有国际化
+
+当实现crud时的规范
+    1. 优先定义api下的请求参数和响应,参数定义完成后,执行 make crtl,会在internal/controller/backend下生成控制器代码,在这里面实现控制器代码
+    2. 所有参数必须具有严格的校验,必须具有国际化,参数校验国际化参考api/backend/organization/v1/demo.go
+
+
+
+4. 当设计的结构体参数超过3个时,参考以下设计模式
+type Backoff struct {
+	attempt atomic.Uint64
+	opts    *BackOffOptions
+}
+
+func NewBackoff(opts ...BackoffOption) *Backoff {
+	options := NewBackOffOptions()
+	for _, opt := range opts {
+		opt(options)
+	}
+	b := &Backoff{
+		opts: options,
+	}
+	return b
+}
+
+type BackOffOptions struct {
+	factor float64       // 指数因子
+	jitter bool          // 是否添加随机抖动
+	min    time.Duration // 最小退避时间
+	max    time.Duration // 最大退避时间
+}
+type BackoffOption func(b *BackOffOptions)
+
+func NewBackOffOptions() *BackOffOptions {
+	return &BackOffOptions{
+		factor: 2,
+		jitter: false,
+		min:    100 * time.Millisecond,
+		max:    10 * time.Second,
+	}
+}
+
+func WithFactor(factor float64) BackoffOption {
+	return func(b *BackOffOptions) {
+		b.factor = factor
+	}
+}
+func WithJitter(jitter bool) BackoffOption {
+	return func(b *BackOffOptions) {
+		b.jitter = jitter
+	}
+}
+
+func WithMin(min time.Duration) BackoffOption {
+	return func(b *BackOffOptions) {
+		b.min = min
+	}
+}
+
+func WithMax(max time.Duration) BackoffOption {
+	return func(b *BackOffOptions) {
+		b.max = max
+	}
+}

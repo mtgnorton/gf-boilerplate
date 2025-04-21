@@ -20,8 +20,8 @@ type UserDao struct {
 
 // UserColumns defines and stores column names for table user.
 type UserColumns struct {
-	Id     string // user id
-	Name   string // user name
+	Id     string //
+	Name   string // username
 	Status string // user status
 	Age    string // user age
 }

@@ -1,0 +1,4 @@
+# Member related
+username_exists = "Username already exists"
+role_not_exists = "Role does not exist"
+not_found = "Member not found" 
