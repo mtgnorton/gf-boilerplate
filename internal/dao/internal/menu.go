@@ -31,7 +31,7 @@ type MenuColumns struct {
 	Component   string // 组件路径
 	Type        string // 菜单类型 directory:目录 menu:菜单 button:按钮
 	Permissions string // 权限标识
-	Status      string // 状态 1:启用 0:禁用
+	Status      string // 状态 normal:启用 disabled:禁用
 	Sort        string // 排序
 	CreatedAt   string // 创建时间
 	UpdatedAt   string // 更新时间

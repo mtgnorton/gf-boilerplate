@@ -147,8 +147,3 @@ t, ok := i.(int)
 ### 业务代码禁用init()函数,必须进行显示调用
 
 
-## gf 规范
-### 优先使用框架自带的参数校验,https://goframe.org/docs/core/gvalid-rules
-### api层中定义的请求响应参数,供controller,service,model 使用,但是api层不能反向调用controller,service,model定义的结构
-### 内部模块之间的调用参数和返回通过在model层下定义结构体,比如是 controller->service 或者 service->service 之间的调用,这部分输入输出模型名称通常以 XxxInput 和 XxxOutput 格式命名。
-

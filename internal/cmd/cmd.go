@@ -9,6 +9,7 @@ import (
 
 	_ "github.com/gogf/gf/contrib/drivers/mysql/v2"
 
+	"gf-boilerplate/internal/controller/backend/auth"
 	"gf-boilerplate/internal/service/middleware"
 )
 
@@ -21,7 +22,11 @@ var (
 			s := g.Server()
 			s.Group("/", func(group *ghttp.RouterGroup) {
 				group.Middleware(middleware.HandlerResponse)
-				group.Bind()
+				group.Middleware(middleware.HandleError)
+				group.Bind(
+					auth.NewRole(),
+					auth.NewMember(),
+				)
 			})
 
 			s.Run()

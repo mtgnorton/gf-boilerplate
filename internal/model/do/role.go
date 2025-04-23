@@ -14,8 +14,8 @@ type Role struct {
 	g.Meta    `orm:"table:role, do:true"`
 	Id        interface{} // 角色ID
 	Name      interface{} // 角色名称
-	Key       interface{} // 角色权限字符串
-	Status    interface{} // 状态 1:启用 0:禁用
+	Code      interface{} // 角色权限字符串
+	Status    interface{} // 状态 normal:启用 disabled:禁用
 	CreatedAt *gtime.Time // 创建时间
 	UpdatedAt *gtime.Time // 更新时间
 	DeletedAt *gtime.Time // 删除时间

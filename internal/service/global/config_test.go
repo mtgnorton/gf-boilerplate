@@ -18,7 +18,7 @@ var (
 func TestConfig(t *testing.T) {
 	gtest.C(t, func(t *gtest.T) {
 		//nolint:errcheck
-		gins.Config().GetAdapter().(*gcfg.AdapterFile).SetFileName(gtest.DataPath("config.yaml"))
+		gins.Config().GetAdapter().(*gcfg.AdapterFile).SetFileName(gtest.DataPath("config.test.yaml"))
 		config := global.GetConfig()
 		t.Assert(config.GetDebug(ctx), false)
 		err := config.SetDebug(ctx, true)

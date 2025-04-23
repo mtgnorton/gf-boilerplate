@@ -6,6 +6,8 @@ gfcli:
     dao:
       - link: "mysql:root:secret@tcp(127.0.0.1:3308)/gf-boilerplate"
         descriptionTag: true
+    enums:
+ 
   run:
     path:  "./bin"
     extra: ""

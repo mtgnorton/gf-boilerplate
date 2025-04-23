@@ -4,9 +4,9 @@ CREATE TABLE `member` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '管理员ID',
   `role_id` bigint unsigned NOT NULL COMMENT '角色ID',
   `username` varchar(32) NOT NULL COMMENT '用户名',
-  `password` varchar(255) NOT NULL COMMENT '密码',
-  `salt` varchar(30) NOT NULL COMMENT '密码盐',
-  `status` varchar(10) NOT NULL DEFAULT 'enabled' COMMENT '状态 enabled:启用 disabled:禁用',
+  `password` char(60) NOT NULL COMMENT '密码',
+  `salt` char(30) NOT NULL COMMENT '密码盐',
+  `status` char(9) NOT NULL DEFAULT 'normal' COMMENT '状态 normal:启用 disabled:禁用',
   `created_at` datetime DEFAULT NULL COMMENT '创建时间',
   `updated_at` datetime DEFAULT NULL COMMENT '更新时间',
   `deleted_at` datetime DEFAULT NULL COMMENT '删除时间',
@@ -18,13 +18,13 @@ CREATE TABLE `member` (
 CREATE TABLE `role` (
   `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '角色ID',
   `name` varchar(50) NOT NULL COMMENT '角色名称',
-  `key` varchar(50) NOT NULL COMMENT '角色权限字符串',
-  `status` bit(1) NOT NULL DEFAULT b'1' COMMENT '状态 1:启用 0:禁用',
+  `code` varchar(50) NOT NULL COMMENT '角色权限字符串',
+  `status` char(9) NOT NULL DEFAULT 'normal' COMMENT '状态 normal:启用 disabled:禁用',
   `created_at` datetime DEFAULT NULL COMMENT '创建时间',
   `updated_at` datetime DEFAULT NULL COMMENT '更新时间',
   `deleted_at` datetime DEFAULT NULL COMMENT '删除时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uk_key` (`key`)
+  UNIQUE KEY `uk_code` (`code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='角色表';
 
 CREATE TABLE `menu` (
@@ -36,9 +36,9 @@ CREATE TABLE `menu` (
   `name` varchar(50) NOT NULL COMMENT '菜单标识',
   `path` varchar(100) NOT NULL COMMENT '路由地址',
   `component` varchar(255) NOT NULL COMMENT '组件路径',
-  `type` varchar(10) NOT NULL COMMENT '菜单类型 directory:目录 menu:菜单 button:按钮',
+  `type` char(10) NOT NULL COMMENT '菜单类型 directory:目录 menu:菜单 button:按钮',
   `permissions` varchar(255) NOT NULL COMMENT '权限标识',
-  `status` bit(1) NOT NULL DEFAULT b'1' COMMENT '状态 1:启用 0:禁用',
+  `status` char(9) NOT NULL DEFAULT 'normal' COMMENT '状态 normal:启用 disabled:禁用',
   `sort` int unsigned NOT NULL DEFAULT '0' COMMENT '排序',
   `created_at` datetime DEFAULT NULL COMMENT '创建时间',
   `updated_at` datetime DEFAULT NULL COMMENT '更新时间',

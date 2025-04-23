@@ -26,7 +26,7 @@ type MemberColumns struct {
 	Username  string // 用户名
 	Password  string // 密码
 	Salt      string // 密码盐
-	Status    string // 状态 enabled:启用 disabled:禁用
+	Status    string // 状态 normal:启用 disabled:禁用
 	CreatedAt string // 创建时间
 	UpdatedAt string // 更新时间
 	DeletedAt string // 删除时间

@@ -17,7 +17,7 @@ type Member struct {
 	Username  interface{} // 用户名
 	Password  interface{} // 密码
 	Salt      interface{} // 密码盐
-	Status    interface{} // 状态 enabled:启用 disabled:禁用
+	Status    interface{} // 状态 normal:启用 disabled:禁用
 	CreatedAt *gtime.Time // 创建时间
 	UpdatedAt *gtime.Time // 更新时间
 	DeletedAt *gtime.Time // 删除时间

@@ -23,8 +23,8 @@ type RoleDao struct {
 type RoleColumns struct {
 	Id        string // 角色ID
 	Name      string // 角色名称
-	Key       string // 角色权限字符串
-	Status    string // 状态 1:启用 0:禁用
+	Code      string // 角色权限字符串
+	Status    string // 状态 normal:启用 disabled:禁用
 	CreatedAt string // 创建时间
 	UpdatedAt string // 更新时间
 	DeletedAt string // 删除时间
@@ -34,7 +34,7 @@ type RoleColumns struct {
 var roleColumns = RoleColumns{
 	Id:        "id",
 	Name:      "name",
-	Key:       "key",
+	Code:      "code",
 	Status:    "status",
 	CreatedAt: "created_at",
 	UpdatedAt: "updated_at",

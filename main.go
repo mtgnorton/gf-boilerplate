@@ -9,9 +9,11 @@ import (
 
 	"gf-boilerplate/internal/cmd"
 	_ "gf-boilerplate/internal/packed"
+	"gf-boilerplate/internal/service/valid"
 )
 
 func main() {
 	g.I18n().SetLanguage("zh-CN")
+	valid.RegisterAll()
 	cmd.Main.Run(gctx.GetInitCtx())
 }

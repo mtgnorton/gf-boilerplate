@@ -11,7 +11,8 @@ export GOOSE_MIGRATION_DIR=./manifest/migration
 include ./hack/hack.mk
 
 run-local:
-	gf run main.go
+	lsof -ti:8002 | xargs kill -9 || true
+	air
 
 migrate:
 	goose up
@@ -30,9 +31,10 @@ lint-fix:
 
 
 ctrl-backend:
-	gf gen ctrl -s ./apibackend -d ./internal/controller/backend -m -v
+	gf gen ctrl -s ./apibackend -d ./internal/controller/backend  -v
 
 ctrl-frontend:
 	gf gen ctrl -s ./api/frontend -d ./internal/controller/frontend -m
 
-
+enum:
+	gf gen enums -p internal/packed/boot_enums.go -s .

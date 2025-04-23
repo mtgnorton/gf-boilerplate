@@ -10,6 +10,19 @@
 
 
 
+
+
+    "cg.role.name.required":"角色名称不能为空",
+    "cg.role.name.length":"角色名称长度必须介于{min}和{max}之间",
+    "cg.role.code.required":"角色权限字符串不能为空",
+    "cg.role.code.length":"角色权限字符串长度必须介于{min}和{max}之间",
+    "cg.role.status.required":"状态不能为空",
+    "cg.role.status.enums":"状态必须为正常或禁用",
+    "cg.role.name.unique":"角色名称已存在",
+    "cg.role.code.unique":"角色权限字符串已存在",
+    "cg.role.not_found":"角色不存在",
+    "cg.role.id.required":"角色ID不能为空",
+    
     "business.fail":"操作失败",
     "business.success":"操作成功"
 }

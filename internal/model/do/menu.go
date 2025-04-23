@@ -22,7 +22,7 @@ type Menu struct {
 	Component   interface{} // 组件路径
 	Type        interface{} // 菜单类型 directory:目录 menu:菜单 button:按钮
 	Permissions interface{} // 权限标识
-	Status      interface{} // 状态 1:启用 0:禁用
+	Status      interface{} // 状态 normal:启用 disabled:禁用
 	Sort        interface{} // 排序
 	CreatedAt   *gtime.Time // 创建时间
 	UpdatedAt   *gtime.Time // 更新时间

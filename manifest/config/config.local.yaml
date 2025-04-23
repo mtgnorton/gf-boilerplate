@@ -8,7 +8,8 @@ server:
   openapiPath: "/api.json"
   swaggerPath: "/swagger"
   errorLogEnabled: false
-
+  accessLogEnabled: true
+  
 # https://goframe.org/docs/core/glog-config
 #  DEBU < INFO < NOTI < WARN < ERRO < CRIT
 #  ALL, DEV, PROD
@@ -24,6 +25,8 @@ notify:
 database:
   default:
     link: "mysql:root:secret@tcp(127.0.0.1:3308)/gf-boilerplate?loc=Local&parseTime=true&charset=utf8mb4"
+    debug:  true
+    stdout: false
 
 # Redis 配置示例
 redis:

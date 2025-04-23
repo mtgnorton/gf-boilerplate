@@ -83,7 +83,7 @@ linters:
     - revive
     - sqlclosecheck
     - staticcheck
-    - testpackage
+    # - testpackage
     - unconvert
     - unused
     - wastedassign

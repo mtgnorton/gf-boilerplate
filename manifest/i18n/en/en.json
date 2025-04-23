@@ -1,0 +1,11 @@
+{
+    "cg.role.name.required":"Role name cannot be empty",
+    "cg.role.name.length":"Role name length must be between {min} and {max}",
+    "cg.role.code.required":"Role permission string cannot be empty", 
+    "cg.role.code.length":"Role permission string length must be between {min} and {max}",
+    "cg.role.status.required":"Status cannot be empty",
+    "cg.role.status.enums":"Status must be normal or disabled",
+
+    "business.fail":"Operation failed",
+    "business.success":"Operation successful"
+}

@@ -2,7 +2,7 @@
 package middleware
 
 import (
-	"encoding/json"
+	"context"
 	"fmt"
 	"mime"
 
@@ -11,9 +11,13 @@ import (
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/net/ghttp"
 	"github.com/gogf/gf/v2/text/gstr"
+	"github.com/gogf/gf/v2/util/gvalid"
 
+	"gf-boilerplate/internal/service/errctx"
 	"gf-boilerplate/internal/service/global"
 )
+
+var nilData = map[string]interface{}{}
 
 const (
 	contentTypeEventStream  = "text/event-stream"
@@ -25,23 +29,23 @@ const (
 	millisecondsDivisor     = 1000.0
 )
 
-var needHiddenErrors = map[gcode.Code]struct{}{
-	gcode.CodeInternalError:             {},
-	gcode.CodeDbOperationError:          {},
-	gcode.CodeInternalPanic:             {},
-	gcode.CodeNotImplemented:            {},
-	gcode.CodeNotSupported:              {},
-	gcode.CodeOperationFailed:           {},
-	gcode.CodeServerBusy:                {},
-	gcode.CodeUnknown:                   {},
-	gcode.CodeNecessaryPackageNotImport: {},
-}
+// var needHiddenErrors = map[gcode.Code]struct{}{
+// 	gcode.CodeInternalError:             {},
+// 	gcode.CodeDbOperationError:          {},
+// 	gcode.CodeInternalPanic:             {},
+// 	gcode.CodeNotImplemented:            {},
+// 	gcode.CodeNotSupported:              {},
+// 	gcode.CodeOperationFailed:           {},
+// 	gcode.CodeServerBusy:                {},
+// 	gcode.CodeUnknown:                   {},
+// 	gcode.CodeNecessaryPackageNotImport: {},
+// }
 
 // streamContentTypes 流式响应的content type
 var streamContentTypes = []string{contentTypeEventStream, contentTypeOctetStream, contentTypeMixedReplace}
 
-// DefaultHandlerResponse 返回给前端的响应结构
-type DefaultHandlerResponse struct {
+// DefaultResponse 返回给前端的响应结构
+type DefaultResponse struct {
 	Code    int         `json:"code"            dc:"错误码"`
 	Message string      `json:"message"         dc:"错误信息"`
 	Data    interface{} `json:"data"            dc:"返回数据"`
@@ -56,11 +60,27 @@ func HandlerResponse(r *ghttp.Request) {
 	if isStreamResponse(r) {
 		return
 	}
-	// 处理错误日志
-	handleErrorLog(r)
+	// 如果响应已经写入,则清空响应
+	if r.Response.BufferLength() > 0 || r.Response.BytesWritten() > 0 {
+		r.Response.ClearBuffer()
+	}
 
-	// 构建响应
-	resp := buildResponse(r)
+	isDebug := global.GetConfig().GetDebug(r.Context())
+	if r.Header.Get("X-Debug") != "" {
+		isDebug = true
+	}
+	err := r.GetError()
+	// 如果没有错误,返回成功响应
+	if err == nil {
+		r.Response.WriteJsonExit(DefaultResponse{
+			Code:    gcode.CodeOK.Code(),
+			Message: g.I18n().T(r.Context(), "business.success"),
+			Data:    r.GetHandlerResponse(),
+		})
+		return
+	}
+	// 构建错误响应
+	resp := buildErrResponse(r.Context(), err, isDebug)
 
 	// 返回响应
 	r.Response.WriteJsonExit(resp)
@@ -80,86 +100,63 @@ func isStreamResponse(r *ghttp.Request) bool {
 	return false
 }
 
-// checkAndClearCritical 检查是否发生了critical错误
-func checkAndClearCritical(r *ghttp.Request) bool {
-	if r.Response.BufferLength() > 0 || r.Response.BytesWritten() > 0 {
-		r.Response.ClearBuffer()
-		return true
-	}
-	return false
-}
-
-// buildResponse 构建响应结构
-func buildResponse(r *ghttp.Request) DefaultHandlerResponse {
+// buildErrResponse 构建响应结构
+func buildErrResponse(ctx context.Context, err error, isDebug bool) DefaultResponse {
 	var (
-		err     = r.GetError()
-		data    = map[string]interface{}{} // 避免json序列化后,data为空时,显示为null
-		isDebug = global.GetConfig().GetDebug(r.Context())
+		data = nilData // 避免json序列化后,data为空时,显示为null
 	)
 
-	// 如果没有错误,返回成功响应
-	if err == nil {
-		return DefaultHandlerResponse{
-			Code:    gcode.CodeOK.Code(),
-			Message: g.I18n().T(r.Context(), "business.success"),
-			Data:    r.GetHandlerResponse(),
+	code := gerror.Code(err)
+	resp := DefaultResponse{
+		Code:    code.Code(),
+		Message: "",
+		Data:    data,
+	}
+	var ctxVariable interface{}
+
+	if code.Code() == errctx.CodeWithCtx { // 自定义错误
+		ctxVariable = code.Detail()
+		msg := code.Message()
+		if gstr.TrimAll(msg) != "" {
+			resp.Message = msg
 		}
 	}
 
-	code := gerror.Code(err)
-	resp := DefaultHandlerResponse{
-		Code:    code.Code(),
-		Message: g.I18n().T(r.Context(), "business.fail"),
-		Data:    data,
+	var validError gvalid.Error
+	if gerror.As(err, &validError) { // gf校验错误
+		err = validError.FirstError()
+		resp.Message = validError.Error()
+		internalCode := gerror.Code(err)
+		if internalCode.Code() == errctx.CodeWithCtx { // gf校验错误包裹了自定义错误
+			resp.Message = internalCode.Message()
+		}
+	}
+
+	if resp.Message == "" {
+		resp.Message = g.I18n().T(ctx, "business.fail")
 	}
 
 	if isDebug {
-		resp.Error = parseStack(gerror.Stack(err))
+		var validError gvalid.Error
+		if gerror.As(err, &validError) {
+			resp.Error = parseStack(fmt.Sprintf("%+v", validError.FirstError()), ctxVariable)
+		} else {
+			resp.Error = parseStack(gerror.Stack(err), ctxVariable)
+		}
 	}
 
 	// 显示业务错误提示信息
-	if _, ok := needHiddenErrors[code]; !ok {
-		resp.Message = gerror.Current(err).Error()
-	}
-
+	// if _, ok := needHiddenErrors[code]; !ok {
+	// 	// 使用两次current的原因是当使用自定义验证类并且自定义验证类出现了内部错误,使用两次current可以获取到自定义验证类定义的错误信息,使用一次会获取到gvalid.Error
+	// 	resp.Message = gerror.Current(gerror.Current(err)).Error()
+	// }
 	return resp
 }
 
-// handleErrorLog 处理错误日志
-func handleErrorLog(r *ghttp.Request) {
-
-	// 检查是否发生了critical错误
-	isCritical := checkAndClearCritical(r)
-
-	err := r.GetError()
-	if err == nil {
-		return
+func parseStack(s string, ctxVariable interface{}) []string {
+	if ctxVariable != nil {
+		s = fmt.Sprintf("上下文变量: %+v\n%s", ctxVariable, s)
 	}
-
-	code := gerror.Code(err)
-	isBusinessError := code == gcode.CodeNil
-
-	if isBusinessError {
-		g.Log().Info(r.Context(), "Business error: %v", err)
-		return
-	}
-
-	// 处理非业务错误
-	c := errorLogContent(err, r)
-	g.Log().Stack(false).Stdout(true).Error(r.Context(), c)
-
-	// 如果是critical错误,发送告警通知
-	if isCritical {
-		go func() {
-			notifyErr := global.GetNotifier(r.Context()).Send(r.Context(), c)
-			if notifyErr != nil {
-				g.Log().Warningf(r.Context(), "发送告警通知失败: %+v", notifyErr)
-			}
-		}()
-	}
-}
-
-func parseStack(s string) []string {
 	stacks := gstr.Split(s, "\n")
 	var result []string
 	for i := 0; i < len(stacks); i++ {
@@ -169,99 +166,4 @@ func parseStack(s string) []string {
 		result = append(result, gstr.Replace(stacks[i], "\t", "--> "))
 	}
 	return result
-}
-
-// processParams 处理请求参数
-func processParams(value interface{}) interface{} {
-	switch v := value.(type) {
-	case string:
-		if len(v) > maxParamLength {
-			return v[:paramTruncateLength] + paramTruncateSuffix
-		}
-		return v
-	case map[string]interface{}:
-		result := make(map[string]interface{}, len(v))
-		for key, val := range v {
-			result[key] = processParams(val)
-		}
-		return result
-	default:
-		return v
-	}
-}
-
-// errorLogContent 接管gf框架的默认错误处理,添加参数信息
-func errorLogContent(err error, r *ghttp.Request) string {
-	var (
-		code          = gerror.Code(err)
-		scheme        = r.GetSchema()
-		codeDetail    = code.Detail()
-		codeDetailStr string
-		params        string
-	)
-
-	if codeDetail != nil {
-		codeDetailStr = gstr.Replace(fmt.Sprintf(`%+v`, codeDetail), "\n", " ")
-	}
-
-	// 获取和处理请求参数
-	if r.Method == "GET" {
-		params = ""
-	} else {
-		params = processRequestParams(r)
-	}
-
-	content := fmt.Sprintf(
-		`%d "%s %s %s %s %s" %.3f, %s, "%s", "%s", %d, "%s", "%+v", "params: 
-%s
-"`,
-		r.Response.Status, r.Method, scheme, r.Host, r.URL.String(), r.Proto,
-		float64(r.LeaveTime.Sub(r.EnterTime))/millisecondsDivisor,
-		r.GetClientIp(), r.Referer(), r.UserAgent(),
-		code.Code(), code.Message(), codeDetailStr, params,
-	)
-
-	// 根据服务器配置决定是否添加错误堆栈信息
-	if stack := gerror.Stack(err); stack != "" {
-		content += "\nStack:\n" + stack
-	} else {
-		content += ", " + err.Error()
-	}
-	return content
-}
-
-// processRequestParams 处理请求参数
-func processRequestParams(r *ghttp.Request) string {
-	var bodyMap map[string]interface{}
-
-	// 处理文件上传请求
-	if r.GetMultipartForm() != nil && len(r.GetMultipartForm().File) > 0 {
-		bodyMap = r.GetMap()
-		// 处理文件字段
-		for field := range r.GetMultipartForm().File {
-			if _, ok := bodyMap[field]; ok {
-				bodyMap[field] = "[file]"
-			}
-		}
-	} else {
-		// 处理普通请求
-		unmarshalErr := json.Unmarshal([]byte(r.GetBodyString()), &bodyMap)
-		if unmarshalErr != nil {
-			return r.GetBodyString()
-		}
-	}
-
-	// 处理所有参数
-	processedMap, ok := processParams(bodyMap).(map[string]interface{})
-	if !ok {
-		return r.GetBodyString()
-	}
-
-	// 序列化处理后的参数
-	paramsBytes, marshalErr := json.Marshal(processedMap)
-	if marshalErr != nil {
-		return r.GetBodyString()
-	}
-
-	return string(paramsBytes)
 }
