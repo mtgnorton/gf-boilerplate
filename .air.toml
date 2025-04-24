@@ -16,7 +16,7 @@ bin = "tmp/main"
 full_bin = "APP_ENV=dev APP_USER=air ./tmp/main"
 # Add additional arguments when running binary (bin/full_bin). Will run './tmp/main hello world'.
 # Watch these filename extensions.
-args_bin = ["--gf.debug", "--gf.gcfg.file=manifest/config/config.local.yaml"]
+args_bin = ["--gf.debug", ""] #--gf.gcfg.file=manifest/config/config.local.yaml
 
 include_ext = ["go", "tpl", "tmpl", "html"]
 # Ignore these filename extensions or directories.

@@ -7,6 +7,8 @@ import (
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
 	"github.com/gogf/gf/v2/os/gcfg"
+	"github.com/gogf/gf/v2/os/genv"
+	"github.com/gogf/gf/v2/text/gstr"
 )
 
 const defaultConfigName = "config"
@@ -21,6 +23,28 @@ func GetConfig() *Config {
 	return globalMapping.GetOrSetFuncLock(defaultConfigName, func() interface{} {
 		return &Config{}
 	}).(*Config)
+}
+
+func (c *Config) InitConfigFromEnv(ctx context.Context) {
+	keys := []string{}
+	for key, val := range genv.Map() {
+		if gstr.HasPrefix(key, "WLINK_") {
+			key = gstr.Replace(key, "WLINK_", "")
+			key = gstr.Replace(key, "_", ".")
+			key = gstr.ToLower(key)
+			keys = append(keys, key)
+			g.Cfg().GetAdapter().(*gcfg.AdapterFile).Set(key, val)
+		}
+	}
+	g.Log().Infof(ctx, "从环境变量初始化配置: %v", keys)
+}
+
+func (c *Config) InitDbConfigFromEnv() {
+	dbConfig := genv.Get("DB_LINK").String()
+	if dbConfig != "" {
+		g.Log().Infof(context.Background(), "从环境变量初始化数据库配置: %s", dbConfig)
+		g.Cfg().GetAdapter().(*gcfg.AdapterFile).Set("database.default.link", dbConfig)
+	}
 }
 
 // GetDebug 获取debug模式

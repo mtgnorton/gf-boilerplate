@@ -3,9 +3,8 @@ NAMESPACE   = "default"
 DEPLOY_NAME = "template-single"
 DOCKER_NAME = "template-single"
 
-export GOOSE_DRIVER=mysql
-export GOOSE_DBSTRING=root:secret@tcp(127.0.0.1:3308)/gf-boilerplate?charset=utf8mb4
-export GOOSE_MIGRATION_DIR=./manifest/migration
+
+include ./manifest/config/config.local.env
 
 
 include ./hack/hack.mk
