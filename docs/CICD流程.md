@@ -1,4 +1,5 @@
 ## 流水线检查
+![](images/CICD流程/20250425145732.png)
 ### 静态检查
 - golangci-lint 静态检查 详细配置见 .golangci.yml
     - 使用golangci-lint的版本为v2.0.2
@@ -41,4 +42,5 @@
     - 环境变量`WLINK_DATABASE_DEFAULT_LINK`会被转换为配置文件的`database.default.link`
     
 - 参见[config.local.env](../manifest/config/config.local.env)
+
 

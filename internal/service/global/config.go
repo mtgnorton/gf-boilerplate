@@ -33,18 +33,14 @@ func (c *Config) InitConfigFromEnv(ctx context.Context) {
 			key = gstr.Replace(key, "_", ".")
 			key = gstr.ToLower(key)
 			keys = append(keys, key)
-			g.Cfg().GetAdapter().(*gcfg.AdapterFile).Set(key, val)
+			//nolint:errcheck
+			err := g.Cfg().GetAdapter().(*gcfg.AdapterFile).Set(key, val)
+			if err != nil {
+				panic(err)
+			}
 		}
 	}
 	g.Log().Infof(ctx, "从环境变量初始化配置: %v", keys)
-}
-
-func (c *Config) InitDbConfigFromEnv() {
-	dbConfig := genv.Get("DB_LINK").String()
-	if dbConfig != "" {
-		g.Log().Infof(context.Background(), "从环境变量初始化数据库配置: %s", dbConfig)
-		g.Cfg().GetAdapter().(*gcfg.AdapterFile).Set("database.default.link", dbConfig)
-	}
 }
 
 // GetDebug 获取debug模式

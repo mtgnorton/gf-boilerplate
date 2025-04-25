@@ -37,3 +37,6 @@ ctrl-frontend:
 
 enum:
 	gf gen enums -p internal/packed/boot_enums.go -s .
+
+test: 
+	go test -v ./...
