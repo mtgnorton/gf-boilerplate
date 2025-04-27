@@ -1,4 +1,4 @@
-export GF_GCFG_PATH=${GF_GCFG_PATH}
+export GF_GCFG_FILE=${GF_GCFG_FILE}
 export GOOSE_DRIVER=${GOOSE_DRIVER}
 export GOOSE_DBSTRING=${GOOSE_DBSTRING}
 export GOOSE_MIGRATION_DIR=${GOOSE_MIGRATION_DIR}
@@ -18,8 +18,10 @@ if ! command -v goose &> /dev/null; then
     fi
 fi
 goose up
+
 if pgrep -x "wlink" >/dev/null; then
     echo "终止 wlink 进程..."
     kill -9 $(pgrep -x "wlink")
 fi
+echo "启动 wlink 进程..."
 nohup /home/wlinkdir/wlink  > /home/wlinkdir/output.log 2>&1 &
