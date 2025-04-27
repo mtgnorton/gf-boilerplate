@@ -17,8 +17,6 @@ if ! command -v goose &> /dev/null; then
         exit 1
     fi
 fi
-
-tar zxvf /home/admin/app/package.tgz -C /home/wlinkdir/
 goose up
 if pgrep -x "wlink" >/dev/null; then
     echo "终止 wlink 进程..."
