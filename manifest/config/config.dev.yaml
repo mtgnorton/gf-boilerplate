@@ -1,0 +1,36 @@
+system:
+  # debug开关，开启后接口出现错误时会向前端输出堆栈信息，可选：false|true，默认为true
+  debug: true
+
+server:
+  address: 80
+  openapiPath: "/api.json"
+  swaggerPath: "/swagger"
+  errorLogEnabled: false
+  accessLogEnabled: true
+  
+
+logger:
+  level : "all"
+  stdout: true
+
+notify:
+  default: fs # fs为feishu
+  fsWebhook: 111
+
+database:
+  default:
+    link:  # 环境变量注入
+    debug:  true
+    stdout: false
+
+redis:
+  default:
+    address:  # 环境变量注入
+    db:      1
+  cache:
+    address:      # 环境变量注入
+    db:          0
+    pass:        
+
+  

@@ -37,10 +37,13 @@
 - 无论是master分支,还是dev分支,所有的提交都通过PR的方式,先经过本地静态检查没有问题后,开发人员提交PR,经过ci检查没有问题后,需要有至少一名其他成员进行review,review通过后,合并到目标分支,关于PR的使用,参考[git相关.md](git规范.md)
 
 ## 部署
-- 为了配置和代码分离,自动化,安全因素,所有配置通过环境变量来指定,所有具有WLINK_前缀的环境变量,都会被自动转换为配置文件的key,比如
-    - 环境变量`WLINK_SYSTEM_DEBUG`会被转换为配置文件的`system.debug`
-    - 环境变量`WLINK_DATABASE_DEFAULT_LINK`会被转换为配置文件的`database.default.link`
-    
+- 配置采用配置文件+环境变量的方式进行部署,部分敏感配置通过环境变量来指定,所有具有WLINK_前缀的环境变量,都回对配置文件进行覆盖
+- 以下配置通过环境变量指定
+    - WLINK_DATABASE_DEFAULT_LINK -> database.default.link
+    - WLINK_REDIS_DEFAULT_ADDRESS -> redis.default.address
+    - WLINK_REDIS_DEFAULT_PASS ->  redis.default.pass
+    - WLINK_REDIS_CACHE_ADDRESS -> redis.cache.address
+    - WLINK_REDIS_CACHE_PASS -> redis.cache.pass
 - 参见[config.local.env](../manifest/config/config.local.env)
 
 

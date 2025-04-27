@@ -4,8 +4,18 @@
     - 该框架具有从构建到代码组织等全流程规范,适合团队协作. 
     - 该框架具有很多开箱即用的底层组件,可以快速构建系统,让开发者可以专注于业务逻辑的实现.
 - 中间件
-  - mysql8.x
-  - redis 7.x
+  - mysql8.4.5
+    - `docker run --name mysql845 -v /home/mysql845/data:/var/lib/mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=16IvYBW1UFMtFWR -e MYSQL_DATABASE=goose-test  -d mysql:8.4.5`
+  - redis 7.2.8
+    - server 
+    - `docker run --name redis728 \
+    -p 6379:6379 \
+    -v /home/redis728/data:/data \
+    -d redis:7.2.8 \
+    --save 60 1`
+    - client 
+     - `docker exec -it redis728 redis-cli`
+
   - kafka 4.x
   - 后续根据需求如果需要增加其他中间件,必须论证必要性,否则,一律不能增加
   - 无论是框架还是中间件,当有大的版本更新时,为了性能和安全性,会选择合适时间点进行升级
