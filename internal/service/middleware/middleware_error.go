@@ -12,13 +12,15 @@ import (
 	"github.com/gogf/gf/v2/util/gvalid"
 
 	"gf-boilerplate/internal/service/errctx"
-	"gf-boilerplate/internal/service/global"
+	"gf-boilerplate/internal/service/st"
 )
 
 func HandleError(r *ghttp.Request) {
 	r.Middleware.Next()
+	_, span := st.GetTracer().NewSpan(r.Context(), "middleware_error")
+	defer span.End()
 
-	isDebug := global.GetConfig().GetDebug(r.Context())
+	isDebug := st.GetConfig().GetDebug(r.Context())
 	if r.Header.Get("X-Debug") != "" {
 		isDebug = true
 	}
@@ -43,7 +45,7 @@ func handleErrorLog(r *ghttp.Request, isDebug bool) {
 		c := errorWithRequestInfo(err, r, nil)
 		g.Log().Stack(false).Stdout(true).Error(r.Context(), c)
 		go func() {
-			notifyErr := global.GetNotifier(r.Context()).Send(r.Context(), c)
+			notifyErr := st.GetNotifierByConfig(r.Context()).Send(r.Context(), c)
 			if notifyErr != nil {
 				g.Log().Warningf(r.Context(), "发送告警通知失败: %+v", notifyErr)
 			}

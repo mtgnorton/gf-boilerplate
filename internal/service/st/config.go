@@ -1,5 +1,5 @@
-// Package global 全局组件-灵活配置
-package global
+// Package st 全局单例-灵活配置
+package st
 
 import (
 	"context"
@@ -13,30 +13,28 @@ import (
 
 const defaultConfigName = "config"
 
+var defaultConfig = &Config{}
+
 // Config 一些可以动态配置的配置
 type Config struct {
 }
 
 // GetConfig 获取配置
 func GetConfig() *Config {
-	//nolint:errcheck
-	return globalMapping.GetOrSetFuncLock(defaultConfigName, func() interface{} {
-		return &Config{}
-	}).(*Config)
+	return defaultConfig
 }
 
-func (c *Config) InitConfigFromEnv(ctx context.Context) {
+// MustInitConfigFromEnv 收集以WLINK_开头的环境变量并设置到配置中
+func (c *Config) MustInitConfigFromEnv(ctx context.Context) {
 	keys := []string{}
 	for key, val := range genv.Map() {
 		if gstr.HasPrefix(key, "WLINK_") {
-			key = gstr.Replace(key, "WLINK_", "")
-			key = gstr.Replace(key, "_", ".")
-			key = gstr.ToLower(key)
+			key = gstr.ToLower(gstr.Replace(gstr.Replace(key, "WLINK_", ""), "_", "."))
 			keys = append(keys, key)
 			//nolint:errcheck
 			err := g.Cfg().GetAdapter().(*gcfg.AdapterFile).Set(key, val)
 			if err != nil {
-				panic(err)
+				g.Log().Panicf(ctx, "从环境变量初始化配置失败 err:%+v", err)
 			}
 		}
 	}

@@ -38,4 +38,9 @@ redis:
     db:          0
     pass:        
 
-  
+trace:
+  enabled: false
+  serviceName: wlink
+  endpoint: localhost:4318
+  path: /v1/traces
+
