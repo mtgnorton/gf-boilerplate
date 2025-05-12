@@ -31,7 +31,7 @@
   - [日志规范](docs/日志规范.md)
   - [时间处理](docs/时间处理.md)
   - [单元测试规范](docs/单元测试规范.md)
-
+  - [链路追踪和指标](docs/链路追踪和指标.md)
 - 需求
   - https://klteeqb691.feishu.cn/drive/folder/FYvmf3GZ0leaxvdKK8Yck2wHnQf
   
