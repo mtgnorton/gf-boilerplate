@@ -2,12 +2,13 @@ package st_test
 
 import (
 	"context"
-	"gf-boilerplate/internal/service/st"
 	"testing"
 
 	"github.com/gogf/gf/v2/frame/gins"
 	"github.com/gogf/gf/v2/os/gcfg"
 	"github.com/gogf/gf/v2/test/gtest"
+
+	"gf-boilerplate/internal/service/st"
 )
 
 var (

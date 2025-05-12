@@ -19,3 +19,15 @@ type ControllerMember struct{}
 func NewMember() auth.IAuthMember {
 	return &ControllerMember{}
 }
+
+type ControllerMenu struct{}
+
+func NewMenu() auth.IAuthMenu {
+	return &ControllerMenu{}
+}
+
+type ControllerAccess struct{}
+
+func NewAccess() auth.IAuthAccess {
+	return &ControllerAccess{}
+}

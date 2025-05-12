@@ -24,8 +24,9 @@ func main() {
 
 func prepare(ctx context.Context) func(ctx context.Context) {
 	g.I18n().SetLanguage("zh-CN")
-	st.GetConfig().MustInitConfigFromEnv(ctx)
-	cleanup := st.GetTracer().MustInitByConfig(ctx)
+	st.MustInitConfigByEnv(ctx)
+	st.MustInitCacheFromConfig(ctx)
+	cleanup := st.MustInitTracerByConfig(ctx)
 	valid.RegisterAll()
 	return cleanup
 }

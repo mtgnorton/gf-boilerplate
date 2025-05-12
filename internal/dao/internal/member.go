@@ -21,28 +21,28 @@ type MemberDao struct {
 
 // MemberColumns defines and stores column names for the table member.
 type MemberColumns struct {
-	Id        string // 管理员ID
-	RoleId    string // 角色ID
-	Username  string // 用户名
-	Password  string // 密码
-	Salt      string // 密码盐
-	Status    string // 状态 normal:启用 disabled:禁用
-	CreatedAt string // 创建时间
-	UpdatedAt string // 更新时间
-	DeletedAt string // 删除时间
+	Id           string // 管理员ID
+	RoleId       string // 角色ID
+	Username     string // 用户名
+	PasswordHash string // 密码
+	Salt         string // 密码盐
+	Status       string // 状态 normal:启用 disabled:禁用
+	CreatedAt    string // 创建时间
+	UpdatedAt    string // 更新时间
+	DeletedAt    string // 删除时间
 }
 
 // memberColumns holds the columns for the table member.
 var memberColumns = MemberColumns{
-	Id:        "id",
-	RoleId:    "role_id",
-	Username:  "username",
-	Password:  "password",
-	Salt:      "salt",
-	Status:    "status",
-	CreatedAt: "created_at",
-	UpdatedAt: "updated_at",
-	DeletedAt: "deleted_at",
+	Id:           "id",
+	RoleId:       "role_id",
+	Username:     "username",
+	PasswordHash: "password_hash",
+	Salt:         "salt",
+	Status:       "status",
+	CreatedAt:    "created_at",
+	UpdatedAt:    "updated_at",
+	DeletedAt:    "deleted_at",
 }
 
 // NewMemberDao creates and returns a new DAO object for table data access.

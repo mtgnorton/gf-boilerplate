@@ -77,7 +77,7 @@ func HandlerResponse(r *ghttp.Request) {
 	if err == nil {
 		r.Response.WriteJsonExit(DefaultResponse{
 			Code:    gcode.CodeOK.Code(),
-			Message: g.I18n().T(r.Context(), "business.success"),
+			Message: g.I18n().T(r.Context(), "cg.success"),
 			Data:    r.GetHandlerResponse(),
 		})
 		return
@@ -136,7 +136,7 @@ func buildErrResponse(ctx context.Context, err error, isDebug bool) DefaultRespo
 	}
 
 	if resp.Message == "" {
-		resp.Message = g.I18n().T(ctx, "business.fail")
+		resp.Message = g.I18n().T(ctx, "cg.fail")
 	}
 
 	if isDebug {
@@ -166,6 +166,7 @@ func parseStack(s string, ctxVariable interface{}) []string {
 		if stacks[i] == "" {
 			continue
 		}
+
 		result = append(result, gstr.Replace(stacks[i], "\t", "--> "))
 	}
 	return result

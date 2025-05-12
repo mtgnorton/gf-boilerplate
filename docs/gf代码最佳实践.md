@@ -106,10 +106,14 @@
 - api结构定义完成后使用`make ctrl-backend` 生成controller,生成的controller文件按照一个操作一个文件的形式,如图:
 ![](images/gf代码最佳实践/20250422161425.png)
 
-- 在controller层开始具体的业务逻辑代码,非业务逻辑错误直接使用`gerror.Wrap(err,"")`返回,不需要定义错误信息,会在中间件直接全局处理,业务逻辑错误需要使用`gerror.Wrap(err,g.I18n().T(r.Context(), "business.success"))`返回
-
+- 在controller层开始具体的业务逻辑代码,错误处理参见[错误处理](./错误处理.md),开头增加链路追踪,如:
+```go
+	ctx, span := st.GetTracer().NewSpan(ctx, "Create")
+	defer span.End()
+```
+- 生成的auth.go文件,该文件只会生成一次，可以在里面填充必要的预定义代码内容，例如，该模块 controller 内部使用的变量、常量、数据结构定义
 ### 注意事项
-- 指针结合 do 对象实现当传递该参数时执行修改，不传递时不修改。
+- 指针结合 do 对象实现当传递该参数时执行修改，不传递时不修改。 https://goframe.org/docs/core/gdb-practice-using-pointer-and-do-for-update-api
     ```go
         type UpdateReq struct {
             g.Meta   `path:"/user/{Id}" method:"post" summary:"修改用户信息"`

@@ -35,7 +35,11 @@ func GetTracer() *Tracer {
 	return defaultTracer
 }
 
-func (t *Tracer) NewSpan(ctx context.Context, spanName string, opts ...traceOption.SpanStartOption) (context.Context, *gtrace.Span) {
+func (t *Tracer) NewSpan(
+	ctx context.Context,
+	spanName string,
+	opts ...traceOption.SpanStartOption,
+) (context.Context, *gtrace.Span) {
 	if !g.Cfg().MustGet(ctx, "trace.enabled").Bool() {
 		return ctx, &gtrace.Span{
 			Span: noopSpanInstance,
@@ -45,21 +49,6 @@ func (t *Tracer) NewSpan(ctx context.Context, spanName string, opts ...traceOpti
 	return ctx, &gtrace.Span{
 		Span: span,
 	}
-}
-
-// MustInitByConfig 初始化链路追踪器,如果出错直接panic
-func (t *Tracer) MustInitByConfig(ctx context.Context) func(ctx context.Context) {
-	if !g.Cfg().MustGet(ctx, "trace.enabled").Bool() {
-		return func(ctx context.Context) {}
-	}
-	serviceName := g.Cfg().MustGet(ctx, "trace.serviceName").String()
-	endpoint := g.Cfg().MustGet(ctx, "trace.endpoint").String()
-	path := g.Cfg().MustGet(ctx, "trace.path").String()
-	cleanup, err := t.Init(serviceName, endpoint, path)
-	if err != nil {
-		g.Log().Panicf(ctx, "初始化链路追踪器失败 err:%+v", err)
-	}
-	return cleanup
 }
 
 // Init 初始化链路追踪器
@@ -159,4 +148,19 @@ func (t *Tracer) Init(serviceName, endpoint, path string) (func(ctx context.Cont
 			g.Log().Debug(ctx, "关闭 tracerProvider 成功")
 		}
 	}, nil
+}
+
+// MustInitByConfig 初始化链路追踪器,如果出错直接panic
+func MustInitTracerByConfig(ctx context.Context) func(ctx context.Context) {
+	if !g.Cfg().MustGet(ctx, "trace.enabled").Bool() {
+		return func(ctx context.Context) {}
+	}
+	serviceName := g.Cfg().MustGet(ctx, "trace.serviceName").String()
+	endpoint := g.Cfg().MustGet(ctx, "trace.endpoint").String()
+	path := g.Cfg().MustGet(ctx, "trace.path").String()
+	cleanup, err := defaultTracer.Init(serviceName, endpoint, path)
+	if err != nil {
+		g.Log().Panicf(ctx, "初始化链路追踪器失败 err:%+v", err)
+	}
+	return cleanup
 }

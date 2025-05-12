@@ -40,3 +40,10 @@ enum:
 
 test: 
 	go test -v ./...
+
+# 
+jager:
+	sh manifest/deploy/dependent/jager.sh
+
+prometheus-grafana:
+	docker-compose -f manifest/deploy/dependent/prometheus_grafana/compose.yaml up

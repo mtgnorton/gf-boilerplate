@@ -3,42 +3,40 @@ package st
 
 import (
 	"context"
-	"sync"
 
 	"github.com/gogf/gf/v2/frame/g"
 )
 
-const defaultNotifyName = "notify"
-
 var defaultNotifier Notifier
-
-var defaultNotifierOnce sync.Once
 
 // Notifier 定义通知发送器接口
 type Notifier interface {
 	Send(ctx context.Context, content string) error
 }
 
-// GetNotifierByConfig 根据配置获取默认通知器
-func GetNotifierByConfig(ctx context.Context) Notifier {
-	defaultNotifierOnce.Do(func() {
-		defaultNotify, err := g.Cfg().Get(ctx, "notify.default")
-		if err != nil {
-			g.Log().Warningf(ctx, "获取默认通知器失败: %v", err)
-			defaultNotifier = &BlankBot{}
-			return
-		}
-		switch defaultNotify.String() {
-		case "fs":
-			webhook := g.Cfg().MustGet(ctx, "notify.fsWebhook").String()
-			defaultNotifier = &FeiShuBot{
-				webhook: webhook,
-			}
-		default:
-			defaultNotifier = &BlankBot{}
-		}
-	})
+func GetNotifier() Notifier {
+	if defaultNotifier == nil {
+		panic("notify not init")
+	}
 	return defaultNotifier
+}
+
+// InitNotifierByConfig 根据配置获取默认通知器
+func InitNotifierByConfig(ctx context.Context) {
+	defaultNotify, err := g.Cfg().Get(ctx, "notify.default")
+	if err != nil {
+		g.Log().Warningf(ctx, "获取默认通知器失败: %v", err)
+		defaultNotifier = &BlankBot{}
+	}
+	switch defaultNotify.String() {
+	case "fs":
+		webhook := g.Cfg().MustGet(ctx, "notify.fsWebhook").String()
+		defaultNotifier = &FeiShuBot{
+			webhook: webhook,
+		}
+	default:
+		defaultNotifier = &BlankBot{}
+	}
 }
 
 // BlankBot 空实现，不发送任何消息

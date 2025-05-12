@@ -45,7 +45,7 @@ func handleErrorLog(r *ghttp.Request, isDebug bool) {
 		c := errorWithRequestInfo(err, r, nil)
 		g.Log().Stack(false).Stdout(true).Error(r.Context(), c)
 		go func() {
-			notifyErr := st.GetNotifierByConfig(r.Context()).Send(r.Context(), c)
+			notifyErr := st.GetNotifier().Send(r.Context(), c)
 			if notifyErr != nil {
 				g.Log().Warningf(r.Context(), "发送告警通知失败: %+v", notifyErr)
 			}

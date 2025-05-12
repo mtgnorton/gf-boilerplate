@@ -42,5 +42,10 @@ trace:
   enabled: false
   serviceName: wlink
   endpoint: localhost:4318
-  path: /v1/traces
+  path: /traces
 
+prometheus:
+  enabled: true
+  path: /metrics
+cache:
+  adapter: "memory" #缓存驱动方式，支持：memory|redis, 不填默认memory,如果为redis,则redis.cache选项必须有值
