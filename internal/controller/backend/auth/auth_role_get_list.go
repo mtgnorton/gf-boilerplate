@@ -3,13 +3,15 @@ package auth
 import (
 	"context"
 
-	"github.com/gogf/gf/v2/errors/gerror"
-
 	"gf-boilerplate/apibackend/auth/role"
 	"gf-boilerplate/internal/dao"
+	"gf-boilerplate/internal/service/st"
 )
 
 func (c *ControllerRole) GetList(ctx context.Context, req *role.GetListReq) (res *role.GetListRes, err error) {
+	ctx, span := st.GetTracer().NewSpan(ctx, "GetList")
+	defer span.End()
+
 	res = &role.GetListRes{}
 	columns := dao.Role.Columns()
 
@@ -17,8 +19,6 @@ func (c *ControllerRole) GetList(ctx context.Context, req *role.GetListReq) (res
 		Fields(columns).
 		OrderDesc(columns.Id).
 		Scan(&res.List)
-	if err != nil {
-		return nil, gerror.Wrap(err, "")
-	}
-	return res, nil
+
+	return res, err
 }

@@ -3,17 +3,16 @@ package auth
 import (
 	"context"
 
-	"github.com/gogf/gf/v2/errors/gerror"
-
 	"gf-boilerplate/apibackend/auth/role"
 	"gf-boilerplate/internal/dao"
+	"gf-boilerplate/internal/service/st"
 )
 
 func (c *ControllerRole) GetOne(ctx context.Context, req *role.GetOneReq) (res *role.GetOneRes, err error) {
-	err = dao.Role.Ctx(ctx).WherePri(req.Id).Scan(&res)
-	if err != nil {
-		return nil, gerror.Wrap(err, "")
-	}
+	ctx, span := st.GetTracer().NewSpan(ctx, "GetOne")
+	defer span.End()
 
-	return res, nil
+	err = dao.Role.Ctx(ctx).WherePri(req.Id).Scan(&res)
+
+	return res, err
 }

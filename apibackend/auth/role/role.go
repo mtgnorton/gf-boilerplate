@@ -8,8 +8,8 @@ import (
 )
 
 type RoleArg struct {
-	Name   string      `json:"name"   v:"required|length:3,10|unique-field:role#cg.role.name.required|cg.role.name.length|cg.role.name.unique" example:"管理员"    dc:"角色名称"`
-	Code   string      `json:"code"   v:"required|length:3,10|unique-field:role#cg.role.code.required|cg.role.code.length|cg.role.code.unique" example:"admin"  dc:"角色权限字符串"`
+	Name   string      `json:"name"   v:"required|length:2,10|unique-field:role#cg.role.name.required|cg.role.name.length|cg.role.name.unique" example:"管理员"    dc:"角色名称"`
+	Code   string      `json:"code"   v:"required|length:4,10|unique-field:role#cg.role.code.required|cg.role.code.length|cg.role.code.unique" example:"admin"  dc:"角色权限字符串"`
 	Status enum.Status `json:"status" v:"required|enums#cg.role.status.required|cg.role.status.enums"                                          example:"normal" dc:"状态,disabled:禁用,normal:正常"`
 }
 
@@ -29,8 +29,8 @@ type CreateRes struct {
 }
 
 type UpdateReq struct {
-	g.Meta `      path:"/role/update" tags:"权限/角色" method:"put" summary:"更新角色"`
-	Id     int64 `                                                             json:"id" v:"required|exist-record:role#cg.role.id.required|cg.role.not_found" dc:"角色ID"`
+	g.Meta `      path:"/role/update" tags:"权限/角色" method:"post" summary:"更新角色"`
+	Id     int64 `                                                              json:"id" v:"required#cg.role.id.required" dc:"角色ID"`
 	RoleArg
 }
 
@@ -39,8 +39,8 @@ type UpdateRes struct {
 }
 
 type DeleteReq struct {
-	g.Meta `      path:"/role/delete" tags:"权限/角色" method:"delete" summary:"删除角色"`
-	Id     int64 `                                                                v:"required" dc:"角色ID"`
+	g.Meta `      path:"/role/delete" tags:"权限/角色" method:"post" summary:"删除角色"`
+	Id     int64 `                                                              v:"required" dc:"角色ID"`
 }
 
 type DeleteRes struct {
@@ -54,7 +54,7 @@ type GetOneReq struct {
 
 type GetOneRes struct {
 	Id int64 `json:"id" example:"1" dc:"角色ID"`
-	RoleArg
+	RoleRet
 }
 
 type GetListReq struct {

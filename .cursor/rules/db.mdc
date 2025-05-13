@@ -1,6 +1,0 @@
----
-description: 
-globs: 
-alwaysApply: false
----
-设计数据表时需要满足 [数据库规范.md](mdc:docs/数据库规范.md)

@@ -11,20 +11,22 @@ import (
 
 	"gf-boilerplate/internal/cmd"
 	_ "gf-boilerplate/internal/packed"
-
-	"gf-boilerplate/internal/service/global"
+	"gf-boilerplate/internal/service/st"
 	"gf-boilerplate/internal/service/valid"
 )
 
 func main() {
 	ctx := gctx.GetInitCtx()
-	prepare(ctx)
+	cleanup := prepare(ctx)
+	defer cleanup(ctx)
 	cmd.Main.Run(ctx)
-
 }
 
-func prepare(ctx context.Context) {
+func prepare(ctx context.Context) func(ctx context.Context) {
 	g.I18n().SetLanguage("zh-CN")
-	global.GetConfig().InitConfigFromEnv(ctx)
+	st.MustInitConfigByEnv(ctx)
+	st.MustInitCacheFromConfig(ctx)
+	cleanup := st.MustInitTracerByConfig(ctx)
 	valid.RegisterAll()
+	return cleanup
 }

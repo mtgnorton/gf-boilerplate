@@ -21,7 +21,7 @@ func Test_buildErrResponse(t *testing.T) {
 
 	// 预期错误->手动抛出 关闭debug
 	gtest.C(t, func(t *gtest.T) {
-		err := errctx.New("错误提示")
+		err := errctx.New(ctx, "错误提示")
 		resp := buildErrResponse(ctx, err, false)
 		t.Assert(resp, DefaultResponse{
 			Code:    errctx.CodeWithCtx,
@@ -35,7 +35,7 @@ func Test_buildErrResponse(t *testing.T) {
 
 	// 预期错误->手动抛出
 	gtest.C(t, func(t *gtest.T) {
-		err := errctx.New("错误提示")
+		err := errctx.New(ctx, "错误提示")
 		resp := buildErrResponse(ctx, err, true)
 		t.Assert(resp.Code, errctx.CodeWithCtx)
 		t.Assert(resp.Message, "错误提示")
@@ -60,7 +60,7 @@ func Test_buildErrResponse(t *testing.T) {
 	// 预期错误->自定义的校验错误
 	gtest.C(t, func(t *gtest.T) {
 		customRuleFunc := func(ctx context.Context, in gvalid.RuleFuncInput) (e error) {
-			return errctx.New("自定义错误")
+			return errctx.New(ctx, "自定义错误")
 		}
 		gvalid.RegisterRule("custom-rule", customRuleFunc)
 		type User struct {

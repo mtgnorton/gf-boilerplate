@@ -3,16 +3,17 @@ package auth
 import (
 	"context"
 
-	"github.com/gogf/gf/v2/errors/gerror"
-
 	"gf-boilerplate/apibackend/auth/role"
 	"gf-boilerplate/internal/dao"
+	"gf-boilerplate/internal/service/st"
 )
 
 func (c *ControllerRole) GetPageList(
 	ctx context.Context,
 	req *role.GetPageListReq,
 ) (res *role.GetPageListRes, err error) {
+	ctx, span := st.GetTracer().NewSpan(ctx, "GetPageList")
+	defer span.End()
 	columns := dao.Role.Columns()
 	res = &role.GetPageListRes{}
 	res.Page = req.Page
@@ -23,8 +24,5 @@ func (c *ControllerRole) GetPageList(
 		Page(req.Offset(), req.Size).
 		OrderDesc(columns.Id).
 		ScanAndCount(&res.List, &res.Total, false)
-	if err != nil {
-		return nil, gerror.Wrap(err, "")
-	}
-	return res, nil
+	return res, err
 }

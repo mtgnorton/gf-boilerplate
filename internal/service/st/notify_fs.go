@@ -1,5 +1,5 @@
-// Package global 全局组件-飞书通知
-package global
+// Package st 全局单例-飞书通知
+package st
 
 import (
 	"context"

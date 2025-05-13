@@ -14,7 +14,7 @@ import (
 	"github.com/gogf/gf/v2/util/gvalid"
 
 	"gf-boilerplate/internal/service/errctx"
-	"gf-boilerplate/internal/service/global"
+	"gf-boilerplate/internal/service/st"
 )
 
 var nilData = map[string]interface{}{}
@@ -56,6 +56,9 @@ type DefaultResponse struct {
 func HandlerResponse(r *ghttp.Request) {
 	r.Middleware.Next()
 
+	_, span := st.GetTracer().NewSpan(r.Context(), "middleware_response")
+	defer span.End()
+
 	// 检查是否为流式响应
 	if isStreamResponse(r) {
 		return
@@ -65,7 +68,7 @@ func HandlerResponse(r *ghttp.Request) {
 		r.Response.ClearBuffer()
 	}
 
-	isDebug := global.GetConfig().GetDebug(r.Context())
+	isDebug := st.GetConfig().GetDebug(r.Context())
 	if r.Header.Get("X-Debug") != "" {
 		isDebug = true
 	}
@@ -74,7 +77,7 @@ func HandlerResponse(r *ghttp.Request) {
 	if err == nil {
 		r.Response.WriteJsonExit(DefaultResponse{
 			Code:    gcode.CodeOK.Code(),
-			Message: g.I18n().T(r.Context(), "business.success"),
+			Message: g.I18n().T(r.Context(), "cg.success"),
 			Data:    r.GetHandlerResponse(),
 		})
 		return
@@ -133,7 +136,7 @@ func buildErrResponse(ctx context.Context, err error, isDebug bool) DefaultRespo
 	}
 
 	if resp.Message == "" {
-		resp.Message = g.I18n().T(ctx, "business.fail")
+		resp.Message = g.I18n().T(ctx, "cg.fail")
 	}
 
 	if isDebug {
@@ -163,6 +166,7 @@ func parseStack(s string, ctxVariable interface{}) []string {
 		if stacks[i] == "" {
 			continue
 		}
+
 		result = append(result, gstr.Replace(stacks[i], "\t", "--> "))
 	}
 	return result

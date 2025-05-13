@@ -99,11 +99,73 @@
 - 注意事项
     - api定义的结构体名称需要满足 `操作+Req` 及 `操作+Res` 的命名方式规范,crud常见操作 创建,修改,删除,查询分页列表,查询列表(不需要分页),查询详情,对应的命名分别为 `CreateReq/Res`, `UpdateReq/Res`, `DeleteReq/Res`, `GetPageListReq/Res`,`GetListReq/Res`, `GetOneReq/Res`,对应的path分别为 `/操作/create`, `/操作/update`, `/操作/delete`, `/操作/page_list`, `/操作/list`, `/操作/one`,查询操作使用 `Get`方法,其他统一使用 `Post`方法,方便权限管理
     - 优先使用框架自带的参数校验, https://goframe.org/docs/core/gvalid-rules,  
-    如果需要复用校验规则且没有内置规则,在`internal/service/valid`目录下创建对应校验规则文件
+    如果需要复用校验规则且没有内置规则,在`internal/service/valid`目录下创建对应校验规则文件,所有的提示语采用国际化
     - tag标签严格按照 `json,v,example,dc` 顺序
     - 需要使用枚举类型的在`internal/consts/enum`目录下创建枚举类型,使用`make enum` 生成枚举类型,api结构体中引用后,可直接在api文档中显示枚举类型
 ### 生成controller
 - api结构定义完成后使用`make ctrl-backend` 生成controller,生成的controller文件按照一个操作一个文件的形式,如图:
 ![](images/gf代码最佳实践/20250422161425.png)
 
-- 在controller层开始具体的业务逻辑代码,非业务逻辑错误直接使用`gerror.Wrap(err,"")`返回,不需要定义错误信息,会在中间件直接全局处理,业务逻辑错误需要使用`gerror.Wrap(err,g.I18n().T(r.Context(), "business.success"))`返回
+- 在controller层开始具体的业务逻辑代码,错误处理参见[错误处理](./错误处理.md),开头增加链路追踪,如:
+```go
+	ctx, span := st.GetTracer().NewSpan(ctx, "Create")
+	defer span.End()
+```
+- 生成的auth.go文件,该文件只会生成一次，可以在里面填充必要的预定义代码内容，例如，该模块 controller 内部使用的变量、常量、数据结构定义
+### 注意事项
+- 指针结合 do 对象实现当传递该参数时执行修改，不传递时不修改。 https://goframe.org/docs/core/gdb-practice-using-pointer-and-do-for-update-api
+    ```go
+        type UpdateReq struct {
+            g.Meta   `path:"/user/{Id}" method:"post" summary:"修改用户信息"`
+            Passport string  `v:"required" dc:"用户账号"`
+            Password *string `dc:"修改用户密码"`
+            Nickname *string `dc:"修改用户昵称"`
+            Status   *Status `dc:"修改用户状态"`
+            Brief    *string `dc:"修改用户描述"`
+        }
+        // do 对象中的 nil 字段将会被自动过滤掉。
+        func (c *Controller) Update(ctx context.Context, req *v1.UpdateReq) (res *v1.UpdateRes, err error) {
+            _, err = dao.User.Ctx(ctx).Data(do.User{
+                Password: req.Password,
+                Nickname: req.Nickname,
+                Status:   req.Status,
+                Brief:    req.Brief,
+            }).Where(do.User{
+                Passport: req.Passport,
+            }).Update()
+            return
+        }
+    ``` 
+
+- 查询时避免返回对象初始化及 sql.ErrNoRows 判断
+    ```go
+    // bad
+        func (s *sTask) GetOne(ctx context.Context, id uint64) (out *entity.ResourceTask, err error) {
+            out = new(model.TaskDetail)
+            err = dao.ResourceTask.Ctx(ctx).WherePri(id).Scan(out) // out被初始化
+            if err != nil {
+                if err == sql.ErrNoRows {
+                    err = gerror.Newf(`record not found for "%d"`, id)
+                }
+                return
+            }
+            return
+        }
+
+    // good
+    func (s *sTask) GetOne(ctx context.Context, id uint64) (out *entity.ResourceTask, err error) {
+        err = dao.ResourceTask.Ctx(ctx).WherePri(id).Scan(&out) // 如果没有数据,out为nil
+        if err != nil {
+            return
+        }
+        if out == nil {
+            err = gerror.Newf(`record not found for "%d"`, id)
+        }
+        return
+    }
+
+
+    ```
+
+
+
