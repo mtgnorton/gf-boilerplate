@@ -1,3 +1,4 @@
+// Package st Prometheus初始化
 package st
 
 import (

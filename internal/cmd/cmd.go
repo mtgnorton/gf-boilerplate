@@ -9,8 +9,7 @@ import (
 
 	_ "github.com/gogf/gf/contrib/drivers/mysql/v2"
 
-	"gf-boilerplate/internal/controller/backend/auth"
-	"gf-boilerplate/internal/service/middleware"
+	"gf-boilerplate/internal/router"
 	"gf-boilerplate/internal/service/st"
 )
 
@@ -18,17 +17,14 @@ var (
 	Main = gcmd.Command{
 		Name:  "main",
 		Usage: "main",
-		Brief: "start backend server",
+		Brief: "start super, admin, broker, client server",
 		Func: func(ctx context.Context, parser *gcmd.Parser) (err error) {
-			s := g.Server("api_backend")
+			s := g.Server()
 			s.Group("/", func(group *ghttp.RouterGroup) {
-				group.Middleware(middleware.HandlerResponse)
-				group.Middleware(middleware.HandleError)
-				group.Bind(
-					auth.NewRole(),
-					auth.NewMember(),
-					auth.NewMenu(),
-				)
+				router.Super(ctx, group)
+				router.Admin(ctx, group)
+				router.Broker(ctx, group)
+				router.Client(ctx, group)
 			})
 			provider := st.MustInitPrometheusByConfig(ctx, s)
 			defer func() {

@@ -21,6 +21,16 @@ notify:
   default: fs # fs为feishu
   fsWebhook: 111
 
+
+jwt:
+  cacheAdapter: "memory"                  #缓存驱动方式，支持：memory|redis, 不填默认memory,如果为redis,则redis.cache选项必须有值
+  secretKey: "wlink2222"                  # 令牌加密秘钥，考虑安全问题生产环境中请修改默认值
+  expires: 604800                        # 令牌有效期，单位：秒。默认7天
+  autoRefresh: true                      # 是否开启自动刷新过期时间， false|true 默认为true
+  refreshInterval: 86400                 # 刷新间隔，单位：秒。必须小于expires，否则无法触发。默认1天内只允许刷新一次
+  maxRefreshTimes: 30                    # 最大允许刷新次数，-1不限制。默认30次
+  multiLogin: true                       # 是否允许多端登录， false|true 默认为true
+
 # https://goframe.org/docs/core/gdb-config-file
 database:
   default:
@@ -47,5 +57,4 @@ trace:
 prometheus:
   enabled: true
   path: /metrics
-cache:
-  adapter: "memory" #缓存驱动方式，支持：memory|redis, 不填默认memory,如果为redis,则redis.cache选项必须有值
+

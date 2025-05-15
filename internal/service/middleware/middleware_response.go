@@ -68,7 +68,7 @@ func HandlerResponse(r *ghttp.Request) {
 		r.Response.ClearBuffer()
 	}
 
-	isDebug := st.GetConfig().GetDebug(r.Context())
+	isDebug := st.GetConfig().Debug(r.Context())
 	if r.Header.Get("X-Debug") != "" {
 		isDebug = true
 	}

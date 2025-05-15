@@ -2,7 +2,7 @@
 - 所有接口必须进行参数验证,不能依赖前端进行验证,如手机号,邮箱,身份证号等,开发人员需要对写入的数据负责
 - 如果当前gf组件库和自有库之间无法满足需求,需要增加第三方依赖库,必须经过讨论,必要时,需要增加第三方库的测试
 - 优先使用框架自带的参数校验,https://goframe.org/docs/core/gvalid-rules
-- apibackend层和apifrontend层只可以引用internal/variable,internal/consts,不可以引用其他层
+- apisuper等api接口定义层只可以引用internal/variable,internal/consts,不可以引用其他层
 - 内部模块之间的调用参数和返回通过在model层下定义结构体,比如是 controller->service 或者 service->service 之间的调用,这部分输入输出模型名称通常以 XxxInput 和 XxxOutput 格式命名。
 - 不会复用的业务逻辑直接写在controller层,需要复用的业务逻辑抽象后写在service层
 
@@ -59,7 +59,7 @@
 ### 定义表
 - 在`manifest/migration`目录下创建表结构,执行`make migrate`生成表结构,表规范参见[数据库规范](./数据库规范.md),表定义参考`manifest/migration/20250410120615_create_user_table.sql`
 - 然后执行`make dao`或`gf gen dao`生成dao层代码
-- 以角色表为例,会生成一下文件
+- 以角色表为例,会生成以下文件
     - `internal/dao/internal/role.go`  
     数据表对应的访问对象,使用如`dao.Role.Ctx(ctx)`,自动生成,**不可修改**
     - `internal/dao/role.go`            

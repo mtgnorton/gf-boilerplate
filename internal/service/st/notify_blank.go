@@ -9,7 +9,7 @@ import (
 
 var defaultNotifier Notifier
 
-// Notifier 定义通知发送器接口
+// GetNotifier 定义通知发送器接口
 type Notifier interface {
 	Send(ctx context.Context, content string) error
 }

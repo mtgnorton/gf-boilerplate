@@ -20,9 +20,9 @@ func TestConfig(t *testing.T) {
 		//nolint:errcheck
 		gins.Config().GetAdapter().(*gcfg.AdapterFile).SetFileName(gtest.DataPath("config.test.yaml"))
 		config := st.GetConfig()
-		t.Assert(config.GetDebug(ctx), false)
+		t.Assert(config.Debug(ctx), false)
 		err := config.SetDebug(ctx, true)
 		t.Assert(err, nil)
-		t.Assert(config.GetDebug(ctx), true)
+		t.Assert(config.Debug(ctx), true)
 	})
 }

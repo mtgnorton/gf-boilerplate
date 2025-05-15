@@ -20,7 +20,7 @@ func HandleError(r *ghttp.Request) {
 	_, span := st.GetTracer().NewSpan(r.Context(), "middleware_error")
 	defer span.End()
 
-	isDebug := st.GetConfig().GetDebug(r.Context())
+	isDebug := st.GetConfig().Debug(r.Context())
 	if r.Header.Get("X-Debug") != "" {
 		isDebug = true
 	}

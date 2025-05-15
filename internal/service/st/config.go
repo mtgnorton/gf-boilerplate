@@ -3,6 +3,8 @@ package st
 
 import (
 	"context"
+	"gf-boilerplate/internal/model"
+	"gf-boilerplate/internal/service/errctx"
 
 	"github.com/gogf/gf/v2/errors/gerror"
 	"github.com/gogf/gf/v2/frame/g"
@@ -21,8 +23,25 @@ func GetConfig() *config {
 	return defaultConfig
 }
 
-// GetDebug 获取debug模式
-func (c *config) GetDebug(ctx context.Context) bool {
+// JwtConfig 获取jwt配置
+func (c *config) JwtConfig(ctx context.Context) (*model.JwtConfig, error) {
+	secretKey := g.Cfg().MustGet(ctx, "jwt.secretKey").String()
+	if secretKey == "" {
+		return nil, errctx.New(ctx, "cg.jwt.secret_empty")
+	}
+
+	config := &model.JwtConfig{
+		SecretKey:       secretKey,
+		Expires:         g.Cfg().MustGet(ctx, "jwt.expires").Int(),
+		AutoRefresh:     g.Cfg().MustGet(ctx, "jwt.autoRefresh").Bool(),
+		RefreshInterval: g.Cfg().MustGet(ctx, "jwt.refreshInterval").Int(),
+		MaxRefreshTimes: g.Cfg().MustGet(ctx, "jwt.maxRefreshTimes").Int(),
+	}
+	return config, nil
+}
+
+// Debug 获取debug模式
+func (c *config) Debug(ctx context.Context) bool {
 	debug, err := g.Cfg().Get(ctx, "system.debug")
 	if err != nil {
 		g.Log().Infof(ctx, "获取配置debug失败: %v", err)
