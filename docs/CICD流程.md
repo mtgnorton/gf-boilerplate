@@ -1,6 +1,6 @@
 ## 流水线检查
-![](20250514194552.png)
-![](20250514194615.png)
+![](images/CICD流程/20250514194552.png)
+![](images/CICD流程/20250514194615.png)
 ### 静态检查
 - golangci-lint 静态检查 详细配置见 .golangci.yml
     - 使用golangci-lint的版本为v2.0.2
